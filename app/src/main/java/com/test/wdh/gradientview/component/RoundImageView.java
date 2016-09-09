@@ -24,7 +24,8 @@ import com.test.wdh.gradientview.R;
 
 /**
  * Created by wdh on 2016/9/9.
- * 圆形头像实现,建议View的宽高像素相等
+ * 圆形ImageView实现,建议View的宽高像素相等
+ * 该视图总会将ImageView的最短边作为内部圆形图像的直径，用以处理图像缩放，移动和绘制。
  */
 public class RoundImageView extends ImageView implements ViewTreeObserver.OnGlobalLayoutListener {
 
@@ -36,9 +37,15 @@ public class RoundImageView extends ImageView implements ViewTreeObserver.OnGlob
 
     private float mBorderWidth = 0;
 
-    private static final Bitmap.Config CONFIG = Bitmap.Config.ALPHA_8;
+    private static final Bitmap.Config CONFIG = Bitmap.Config.ARGB_4444;
 
-    private static int COLOR_DRAWABLE_PX = 1;
+    private final static int COLOR_DRAWABLE_PX = 1;
+
+
+    /**
+     * 填充模式
+     */
+    private boolean fillType = false;
 
     private int mWidth = 0;
     private int mHeight = 0;
@@ -52,6 +59,21 @@ public class RoundImageView extends ImageView implements ViewTreeObserver.OnGlob
     private Paint mBorderPaint;
 
     private float bitmapRadius;
+
+    /**
+     * @param fillType 正方形图片这个值可以不设置。长方形图片设置为true，那么会
+     *                 将图片压缩为一张正方形图片，展示压缩后的图形。设置为false
+     *                 展示对图片宽高比不做压缩，将图片缩放到最短边等于ImageView
+     *                 的直径，然后截取中间圆形图像展示。
+     */
+    public void setFillType(boolean fillType) {
+        this.fillType = fillType;
+    }
+
+    /**
+     * 是否重新设置图片，如果重新设置那就设置为true
+     */
+    private boolean isReset = false;
 
     /**
      * 通过Drawable对象获取位图
@@ -71,7 +93,7 @@ public class RoundImageView extends ImageView implements ViewTreeObserver.OnGlob
                 bitmap = Bitmap.createBitmap(d.getIntrinsicWidth(), d.getIntrinsicHeight(), CONFIG);
             }
             Canvas canvas = new Canvas(bitmap);
-            d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
+            d.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
             d.draw(canvas);
             return bitmap;
         } catch (OutOfMemoryError e) {
@@ -83,6 +105,7 @@ public class RoundImageView extends ImageView implements ViewTreeObserver.OnGlob
     @Override
     public void setImageBitmap(Bitmap bm) {
         super.setImageBitmap(bm);
+        isReset = true;
         mBitmap = getBitmapFromDrawable(getDrawable());
         if (mBitmap == null) {
             return;
@@ -93,6 +116,7 @@ public class RoundImageView extends ImageView implements ViewTreeObserver.OnGlob
     @Override
     public void setImageDrawable(Drawable drawable) {
         super.setImageDrawable(drawable);
+        isReset = true;
         if (isInitPaint) { //不做此步处理会报错，使用xml加载的RoundImageView，会在构造方法中调用该方法，如果不做处理的话就不可以在xml中设置默认src文件了。
             mBitmap = getBitmapFromDrawable(getDrawable());
             if (mBitmap == null) {
@@ -105,6 +129,7 @@ public class RoundImageView extends ImageView implements ViewTreeObserver.OnGlob
     @Override
     public void setImageResource(int resId) {
         super.setImageResource(resId);
+        isReset = true;
         mBitmap = getBitmapFromDrawable(getDrawable());
         if (mBitmap == null) {
             return;
@@ -128,31 +153,39 @@ public class RoundImageView extends ImageView implements ViewTreeObserver.OnGlob
      * 获取位图信息以后，设置画笔内容
      */
     private void setupPaint() {
+        if (!isReset) {
+            return;
+        }
+        isReset = false;
         float w = mBitmap.getWidth();
         float h = mBitmap.getHeight();
         float diameter = Math.min(mWidth, mHeight);
         bitmapRadius = diameter / 2.0f - mBorderWidth;//头像画圆，取最小的边为半径
         //计算图像着色器范围
         Matrix matrix = new Matrix();
-        float sX = 1.0f;
-        float sY = 1.0f;
-        if (w < diameter * 2.0f) {//图像宽度小于直径
-            sX = diameter / w;
+        float sX = diameter / w;
+        float sY = diameter / h;
+        float sMax = Math.max(sX, sY);
+        matrix.postTranslate((mWidth - w) / 2.0f, (mHeight - h) / 2.0f);
+        if (!fillType) {
+            matrix.postScale(sMax, sMax, mWidth / 2.0f, mHeight / 2.0f);
+        } else {
+            matrix.postScale(sX, sY, mWidth / 2.0f, mHeight / 2.0f);
         }
-        if (h < diameter * 2.0f) {//图像高度小于直径
-            sY = diameter / h;
-        }
-        sX = Math.max(sX, sY);
-        matrix.postScale(sX, sY);
+        //设置位图的画笔
         mBitmapShader = new BitmapShader(mBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
         mBitmapShader.setLocalMatrix(matrix);
         mBitmapPaint.setShader(mBitmapShader);
+        //设置边框的画笔
         mBorderPaint.setStyle(Paint.Style.STROKE);
         mBorderPaint.setStrokeWidth(mBorderWidth);
         mBorderPaint.setColor(mBorderColor);
 
     }
 
+    /**
+     * 初始化画笔
+     */
     private void initPaint() {
         mBitmapPaint = new Paint();
         mBorderPaint = new Paint();
@@ -172,7 +205,7 @@ public class RoundImageView extends ImageView implements ViewTreeObserver.OnGlob
         super.onDetachedFromWindow();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             getViewTreeObserver().removeOnGlobalLayoutListener(this);
-        }else {
+        } else {
             getViewTreeObserver().addOnGlobalLayoutListener(null);
         }
     }
@@ -180,6 +213,7 @@ public class RoundImageView extends ImageView implements ViewTreeObserver.OnGlob
     private void setProperties(TypedArray array) {
         mBorderColor = array.getColor(R.styleable.RoundImageView_borderColor, mBorderColor);
         mBorderWidth = array.getDimension(R.styleable.RoundImageView_borderWidth, mBorderColor);
+        fillType = array.getBoolean(R.styleable.RoundImageView_fillType, false);
     }
 
     @Override
@@ -215,6 +249,7 @@ public class RoundImageView extends ImageView implements ViewTreeObserver.OnGlob
 
     @Override
     public void onGlobalLayout() {
+        isReset = true;
         mBitmap = getBitmapFromDrawable(getDrawable());
         if (mBitmap == null) {
             return;

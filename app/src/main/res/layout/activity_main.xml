@@ -7,11 +7,12 @@
 
     <com.test.wdh.gradientview.component.RoundImageView
         android:layout_centerInParent="true"
-        android:layout_width="400dp"
-        android:layout_height="400dp"
+        android:layout_width="300dp"
+        android:layout_height="500dp"
         app:borderColor="#000000"
+        app:fillType="false"
         android:id="@+id/iv"
         app:borderWidth="2dp"
-        android:src="@drawable/ic_launcher" />
+        android:src="@drawable/b" />
 
 </RelativeLayout>

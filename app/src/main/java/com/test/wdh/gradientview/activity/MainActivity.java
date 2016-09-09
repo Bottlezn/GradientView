@@ -14,7 +14,7 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        ColorDrawable colorDrawable=new ColorDrawable(getResources().getColor(R.color.colorPrimary));
+//        ColorDrawable colorDrawable=new ColorDrawable(getResources().getColor(R.color.colorAccent));
 //        RoundImageView view= (RoundImageView) findViewById(R.id.iv);
 //        view.setImageDrawable(colorDrawable);
     }

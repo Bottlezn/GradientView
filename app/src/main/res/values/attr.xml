@@ -4,5 +4,6 @@
     <declare-styleable name="RoundImageView">
         <attr name="borderColor" format="color" />
         <attr name="borderWidth" format="dimension" />
+        <attr name="fillType" format="boolean"/>
     </declare-styleable>
 </resources>
