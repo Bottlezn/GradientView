@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.test.wdh.gradientview.component.GradientView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+    <com.test.wdh.gradientview.component.RoundImageView
+        android:layout_centerInParent="true"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        app:borderColor="#000000"
+        app:borderWidth="2dp"
+        android:src="@drawable/ic_launcher" />
+
 </RelativeLayout>
