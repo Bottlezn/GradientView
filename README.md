@@ -1,2 +1,3 @@
-# Shader_About
-This a project that test the subclass of the Shader.
+#Shader
+该工程主要用来测试着色器的5个子类。目前已经完成BitmapShader的初步测试，通过绘制圆形ImageView这种常用控件来完成BitmapShader应用。  
+##RoundImageView
