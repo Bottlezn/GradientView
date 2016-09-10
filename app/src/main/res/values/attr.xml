@@ -4,6 +4,11 @@
     <declare-styleable name="RoundImageView">
         <attr name="borderColor" format="color" />
         <attr name="borderWidth" format="dimension" />
-        <attr name="fillType" format="boolean"/>
+        <attr name="fillType" format="boolean" />
+        <attr name="corner" format="dimension" />
+        <!--只能是0或1，0是圆形，1是圆角，不设置默认是圆形-->
+        <attr name="drawStyle" format="integer" />
+        <!--true的画，将图像调整为灰色，但是如果遇到ColorDrawable的内容，不知道会发生什么化学反应-->
+        <attr name="isGray" format="boolean" />
     </declare-styleable>
 </resources>

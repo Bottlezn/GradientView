@@ -9,11 +9,13 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PointF;
+import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -25,7 +27,8 @@ import com.test.wdh.gradientview.R;
 /**
  * Created by wdh on 2016/9/9.
  * 圆形ImageView实现,建议View的宽高像素相等
- * 该视图总会将ImageView的最短边作为内部圆形图像的直径，用以处理图像缩放，移动和绘制。
+ * 该视图总会将ImageView的最短边作为内部圆形图像的直径，用以处理图像缩放，移动，
+ * 然后绘制到视图中心
  */
 public class RoundImageView extends ImageView implements ViewTreeObserver.OnGlobalLayoutListener {
 
@@ -47,6 +50,22 @@ public class RoundImageView extends ImageView implements ViewTreeObserver.OnGlob
      */
     private boolean fillType = false;
 
+    /**
+     * 圆形模式
+     */
+    public static final int ROUND_STYLE = 0;
+
+
+    /**
+     * 圆角模式
+     */
+    public static final int ROUND_RECT_STYLE = 1;
+
+    /**
+     * 绘制风格
+     */
+    private int drawStyle = 0;
+
     private int mWidth = 0;
     private int mHeight = 0;
     private PointF centerPoint = null;
@@ -58,7 +77,17 @@ public class RoundImageView extends ImageView implements ViewTreeObserver.OnGlob
 
     private Paint mBorderPaint;
 
-    private float bitmapRadius;
+    private float mBitmapRadius;
+
+    private float mCorner = 0;
+    private RectF mRoundRect;
+
+    private RectF mBorderRect;
+
+    /**
+     * 是否是灰色的
+     */
+    private boolean isGray = false;
 
     /**
      * @param fillType 正方形图片这个值可以不设置。长方形图片设置为true，那么会
@@ -67,6 +96,9 @@ public class RoundImageView extends ImageView implements ViewTreeObserver.OnGlob
      *                 的直径，然后截取中间圆形图像展示。
      */
     public void setFillType(boolean fillType) {
+        if (this.fillType == fillType) {
+            return;
+        }
         this.fillType = fillType;
     }
 
@@ -106,11 +138,7 @@ public class RoundImageView extends ImageView implements ViewTreeObserver.OnGlob
     public void setImageBitmap(Bitmap bm) {
         super.setImageBitmap(bm);
         isReset = true;
-        mBitmap = getBitmapFromDrawable(getDrawable());
-        if (mBitmap == null) {
-            return;
-        }
-        setupPaint();
+        resetDrawProperties();
     }
 
     @Override
@@ -118,11 +146,7 @@ public class RoundImageView extends ImageView implements ViewTreeObserver.OnGlob
         super.setImageDrawable(drawable);
         isReset = true;
         if (isInitPaint) { //不做此步处理会报错，使用xml加载的RoundImageView，会在构造方法中调用该方法，如果不做处理的话就不可以在xml中设置默认src文件了。
-            mBitmap = getBitmapFromDrawable(getDrawable());
-            if (mBitmap == null) {
-                return;
-            }
-            setupPaint();
+            resetDrawProperties();
         }
     }
 
@@ -130,11 +154,27 @@ public class RoundImageView extends ImageView implements ViewTreeObserver.OnGlob
     public void setImageResource(int resId) {
         super.setImageResource(resId);
         isReset = true;
+        resetDrawProperties();
+    }
+
+    private void resetDrawProperties() {
         mBitmap = getBitmapFromDrawable(getDrawable());
         if (mBitmap == null) {
             return;
         }
         setupPaint();
+    }
+
+    /**
+     * 设置绘制
+     *
+     * @param drawStyle 只能是ROUND_STYLE或者ROUND_RECT_STYLE的一种，前者是圆形头像，后者是圆角头像。
+     */
+    public void setDrawStyle(@IntRange(from = 0, to = 1) int drawStyle) {
+        if (this.drawStyle == drawStyle) {
+            return;
+        }
+        this.drawStyle = drawStyle;
     }
 
     @Override
@@ -143,11 +183,52 @@ public class RoundImageView extends ImageView implements ViewTreeObserver.OnGlob
             return;
         }
         if (centerPoint != null) {
-            canvas.drawCircle(centerPoint.x, centerPoint.y, bitmapRadius, mBitmapPaint);
-            canvas.drawCircle(centerPoint.x, centerPoint.y, bitmapRadius, mBorderPaint);
+            drawContent(canvas);
+        }
+
+    }
+
+    private void drawContent(Canvas canvas) {
+        if (drawStyle == 0) {
+            canvas.drawCircle(centerPoint.x, centerPoint.y, mBitmapRadius, mBitmapPaint);
+            canvas.drawCircle(centerPoint.x, centerPoint.y, mBitmapRadius, mBorderPaint);
+        } else {
+            canvas.drawRoundRect(mRoundRect, mCorner, mCorner, mBitmapPaint);
+            canvas.drawRoundRect(mRoundRect, mCorner, mCorner, mBorderPaint);
         }
     }
 
+    /**
+     * 将彩色图转换为灰度图，
+     *
+     * @param img 位图
+     * @return 返回转换好的位图
+     */
+    public Bitmap convertGreyImg(Bitmap img) {
+        int width = img.getWidth();         //获取位图的宽
+        int height = img.getHeight();       //获取位图的高
+
+        int[] pixels = new int[width * height]; //通过位图的大小创建像素点数组
+
+        img.getPixels(pixels, 0, width, 0, 0, width, height);
+        int alpha = 0xFF << 24;
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                int grey = pixels[width * i + j];
+
+                int red = ((grey & 0x00FF0000) >> 16);
+                int green = ((grey & 0x0000FF00) >> 8);
+                int blue = (grey & 0x000000FF);
+
+                grey = (int) ((float) red * 0.3 + (float) green * 0.59 + (float) blue * 0.11);
+                grey = alpha | (grey << 16) | (grey << 8) | grey;
+                pixels[width * i + j] = grey;
+            }
+        }
+        Bitmap result = Bitmap.createBitmap(width, height, CONFIG);
+        result.setPixels(pixels, 0, width, 0, 0, width, height);
+        return result;
+    }
 
     /**
      * 获取位图信息以后，设置画笔内容
@@ -157,20 +238,27 @@ public class RoundImageView extends ImageView implements ViewTreeObserver.OnGlob
             return;
         }
         isReset = false;
+        if (isGray) {
+            mBitmap = convertGreyImg(mBitmap);
+        }
         float w = mBitmap.getWidth();
         float h = mBitmap.getHeight();
         float diameter = Math.min(mWidth, mHeight);
-        bitmapRadius = diameter / 2.0f - mBorderWidth;//头像画圆，取最小的边为半径
+        mBitmapRadius = diameter / 2.0f - mBorderWidth;//头像画圆，取最小的边为半径或者正方形边长
         //计算图像着色器范围
         Matrix matrix = new Matrix();
         float sX = diameter / w;
         float sY = diameter / h;
         float sMax = Math.max(sX, sY);
         matrix.postTranslate((mWidth - w) / 2.0f, (mHeight - h) / 2.0f);
+        //根据填充类型调整位图着色器图像内容
         if (!fillType) {
             matrix.postScale(sMax, sMax, mWidth / 2.0f, mHeight / 2.0f);
         } else {
             matrix.postScale(sX, sY, mWidth / 2.0f, mHeight / 2.0f);
+        }
+        if (drawStyle == 1 && centerPoint != null) {//圆角模式，更改图像的矩阵和边缘的矩阵
+            mRoundRect = new RectF(centerPoint.x - mBitmapRadius, centerPoint.y - mBitmapRadius, centerPoint.x + mBitmapRadius, centerPoint.y + mBitmapRadius);
         }
         //设置位图的画笔
         mBitmapShader = new BitmapShader(mBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
@@ -214,6 +302,10 @@ public class RoundImageView extends ImageView implements ViewTreeObserver.OnGlob
         mBorderColor = array.getColor(R.styleable.RoundImageView_borderColor, mBorderColor);
         mBorderWidth = array.getDimension(R.styleable.RoundImageView_borderWidth, mBorderColor);
         fillType = array.getBoolean(R.styleable.RoundImageView_fillType, false);
+        mCorner = array.getDimension(R.styleable.RoundImageView_corner, 0);
+        drawStyle = array.getInt(R.styleable.RoundImageView_drawStyle, 0);
+        drawStyle = drawStyle == 0 || drawStyle == 1 ? drawStyle : 0;
+        isGray = array.getBoolean(R.styleable.RoundImageView_isGray, false);
     }
 
     @Override
@@ -250,10 +342,6 @@ public class RoundImageView extends ImageView implements ViewTreeObserver.OnGlob
     @Override
     public void onGlobalLayout() {
         isReset = true;
-        mBitmap = getBitmapFromDrawable(getDrawable());
-        if (mBitmap == null) {
-            return;
-        }
-        setupPaint();
+        resetDrawProperties();
     }
 }

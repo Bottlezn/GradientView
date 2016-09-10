@@ -1,18 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center_horizontal"
     android:orientation="vertical">
 
     <com.test.wdh.gradientview.component.RoundImageView
+        android:layout_width="120dp"
+        android:layout_height="120dp"
         android:layout_centerInParent="true"
-        android:layout_width="300dp"
-        android:layout_height="500dp"
+        android:layout_margin="10dp"
+        android:src="@drawable/b"
         app:borderColor="#000000"
+        app:borderWidth="1dp"
+        app:corner="6dp"
+        app:drawStyle="0"
         app:fillType="false"
-        android:id="@+id/iv"
-        app:borderWidth="2dp"
-        android:src="@drawable/b" />
+        app:isGray="false" />
 
-</RelativeLayout>
+    <com.test.wdh.gradientview.component.RoundImageView
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_centerInParent="true"
+        android:layout_margin="10dp"
+        android:src="@drawable/b"
+        app:borderColor="#ff0000"
+        app:borderWidth="1dp"
+        app:corner="6dp"
+        app:drawStyle="0"
+        app:fillType="true"
+        app:isGray="false" />
+
+    <!--<com.test.wdh.gradientview.component.RoundImageView-->
+    <!--android:layout_width="120dp"-->
+    <!--android:layout_height="120dp"-->
+    <!--android:layout_centerInParent="true"-->
+    <!--android:layout_margin="10dp"-->
+    <!--android:src="@drawable/b"-->
+    <!--app:borderColor="#00ff00"-->
+    <!--app:borderWidth="1dp"-->
+    <!--app:corner="6dp"-->
+    <!--app:drawStyle="0"-->
+    <!--app:fillType="false"-->
+    <!--app:isGray="true" />-->
+
+    <com.test.wdh.gradientview.component.RoundImageView
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_centerInParent="true"
+        android:layout_margin="10dp"
+        android:src="@drawable/b"
+        app:borderColor="#0000ff"
+        app:borderWidth="1dp"
+        app:corner="6dp"
+        app:drawStyle="1"
+        app:fillType="false"
+        app:isGray="false" />
+
+</LinearLayout>
