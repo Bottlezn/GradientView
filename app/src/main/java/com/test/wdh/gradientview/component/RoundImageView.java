@@ -45,7 +45,7 @@ public class RoundImageView extends ImageView implements ViewTreeObserver.OnGlob
     private static final Bitmap.Config CONFIG = Bitmap.Config.ARGB_4444;
 
     private final static int COLOR_DRAWABLE_PX = 1;
-    private ColorMatrix mColrColorMatrix = new ColorMatrix();
+    private ColorMatrix mColorMatrix = new ColorMatrix();
 
     public boolean getGray() {
         return isGray;
@@ -251,11 +251,11 @@ public class RoundImageView extends ImageView implements ViewTreeObserver.OnGlob
         mBitmapShader.setLocalMatrix(matrix);
         mBitmapPaint.setShader(mBitmapShader);
         if (isGray) {
-            mColrColorMatrix.setSaturation(0f);
+            mColorMatrix.setSaturation(0f);
         } else {
-            mColrColorMatrix.setSaturation(1f);
+            mColorMatrix.setSaturation(1f);
         }
-        mBitmapPaint.setColorFilter(new ColorMatrixColorFilter(mColrColorMatrix));
+        mBitmapPaint.setColorFilter(new ColorMatrixColorFilter(mColorMatrix));
         //设置边框的画笔
         mBorderPaint.setStyle(Paint.Style.STROKE);
         mBorderPaint.setStrokeWidth(mBorderWidth);
