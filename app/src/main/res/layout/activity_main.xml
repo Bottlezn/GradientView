@@ -6,31 +6,18 @@
     android:gravity="center_horizontal"
     android:orientation="vertical">
 
-    <com.test.wdh.gradientview.component.RoundImageView
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:layout_centerInParent="true"
-        android:layout_margin="10dp"
-        android:src="@drawable/b"
-        app:borderColor="#000000"
-        app:borderWidth="1dp"
-        app:corner="6dp"
-        app:drawStyle="0"
-        app:fillType="false"
-        app:isGray="false" />
-
-    <com.test.wdh.gradientview.component.RoundImageView
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:layout_centerInParent="true"
-        android:layout_margin="10dp"
-        android:src="@drawable/b"
-        app:borderColor="#ff0000"
-        app:borderWidth="1dp"
-        app:corner="6dp"
-        app:drawStyle="0"
-        app:fillType="true"
-        app:isGray="false" />
+    <!--<com.test.wdh.gradientview.component.RoundImageView-->
+    <!--android:layout_width="120dp"-->
+    <!--android:layout_height="120dp"-->
+    <!--android:layout_centerInParent="true"-->
+    <!--android:layout_margin="10dp"-->
+    <!--android:src="@drawable/b"-->
+    <!--app:borderColor="#000000"-->
+    <!--app:borderWidth="1dp"-->
+    <!--app:corner="6dp"-->
+    <!--app:drawStyle="0"-->
+    <!--app:fillType="false"-->
+    <!--app:isGray="false" />-->
 
     <!--<com.test.wdh.gradientview.component.RoundImageView-->
     <!--android:layout_width="120dp"-->
@@ -38,24 +25,38 @@
     <!--android:layout_centerInParent="true"-->
     <!--android:layout_margin="10dp"-->
     <!--android:src="@drawable/b"-->
-    <!--app:borderColor="#00ff00"-->
+    <!--app:borderColor="#ff0000"-->
     <!--app:borderWidth="1dp"-->
     <!--app:corner="6dp"-->
     <!--app:drawStyle="0"-->
-    <!--app:fillType="false"-->
-    <!--app:isGray="true" />-->
+    <!--app:fillType="true"-->
+    <!--app:isGray="false" />-->
 
     <com.test.wdh.gradientview.component.RoundImageView
-        android:layout_width="120dp"
-        android:layout_height="120dp"
+        android:id="@+id/iv"
+        android:layout_width="220dp"
+        android:layout_height="220dp"
         android:layout_centerInParent="true"
         android:layout_margin="10dp"
         android:src="@drawable/b"
-        app:borderColor="#0000ff"
+        app:borderColor="#00ff00"
         app:borderWidth="1dp"
         app:corner="6dp"
-        app:drawStyle="1"
+        app:drawStyle="0"
         app:fillType="false"
-        app:isGray="false" />
+        app:isGray="true" />
+
+    <!--<com.test.wdh.gradientview.component.RoundImageView-->
+    <!--android:layout_width="120dp"-->
+    <!--android:layout_height="120dp"-->
+    <!--android:layout_centerInParent="true"-->
+    <!--android:layout_margin="10dp"-->
+    <!--android:src="@drawable/b"-->
+    <!--app:borderColor="#0000ff"-->
+    <!--app:borderWidth="1dp"-->
+    <!--app:corner="6dp"-->
+    <!--app:drawStyle="1"-->
+    <!--app:fillType="false"-->
+    <!--app:isGray="false" />-->
 
 </LinearLayout>

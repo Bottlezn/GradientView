@@ -6,6 +6,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PointF;
@@ -43,7 +45,11 @@ public class RoundImageView extends ImageView implements ViewTreeObserver.OnGlob
     private static final Bitmap.Config CONFIG = Bitmap.Config.ARGB_4444;
 
     private final static int COLOR_DRAWABLE_PX = 1;
+    private ColorMatrix mColrColorMatrix = new ColorMatrix();
 
+    public boolean getGray() {
+        return isGray;
+    }
 
     /**
      * 填充模式
@@ -92,10 +98,15 @@ public class RoundImageView extends ImageView implements ViewTreeObserver.OnGlob
     /**
      * 设置灰度信息
      *
-     * @param gray
+     * @param gray true设置为灰色
      */
     public void setGray(boolean gray) {
-        isGray = gray;
+        if (isGray != gray) {
+            isReset = true;
+            isGray = gray;
+            resetDrawProperties();
+            invalidate();
+        }
     }
 
     /**
@@ -207,37 +218,6 @@ public class RoundImageView extends ImageView implements ViewTreeObserver.OnGlob
         }
     }
 
-    /**
-     * 将彩色图转换为灰度图，
-     *
-     * @param img 位图
-     * @return 返回转换好的位图
-     */
-    public Bitmap convertGreyImg(Bitmap img) {
-        int width = img.getWidth();         //获取位图的宽
-        int height = img.getHeight();       //获取位图的高
-
-        int[] pixels = new int[width * height]; //通过位图的大小创建像素点数组
-
-        img.getPixels(pixels, 0, width, 0, 0, width, height);
-        int alpha = 0xFF << 24;
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
-                int grey = pixels[width * i + j];
-
-                int red = ((grey & 0x00FF0000) >> 16);
-                int green = ((grey & 0x0000FF00) >> 8);
-                int blue = (grey & 0x000000FF);
-
-                grey = (int) ((float) red * 0.3 + (float) green * 0.59 + (float) blue * 0.11);
-                grey = alpha | (grey << 16) | (grey << 8) | grey;
-                pixels[width * i + j] = grey;
-            }
-        }
-        Bitmap result = Bitmap.createBitmap(width, height, CONFIG);
-        result.setPixels(pixels, 0, width, 0, 0, width, height);
-        return result;
-    }
 
     /**
      * 获取位图信息以后，设置画笔内容
@@ -247,9 +227,6 @@ public class RoundImageView extends ImageView implements ViewTreeObserver.OnGlob
             return;
         }
         isReset = false;
-        if (isGray) {
-            mBitmap = convertGreyImg(mBitmap);
-        }
         float w = mBitmap.getWidth();
         float h = mBitmap.getHeight();
         float diameter = Math.min(mWidth, mHeight);
@@ -273,6 +250,12 @@ public class RoundImageView extends ImageView implements ViewTreeObserver.OnGlob
         mBitmapShader = new BitmapShader(mBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
         mBitmapShader.setLocalMatrix(matrix);
         mBitmapPaint.setShader(mBitmapShader);
+        if (isGray) {
+            mColrColorMatrix.setSaturation(0f);
+        } else {
+            mColrColorMatrix.setSaturation(1f);
+        }
+        mBitmapPaint.setColorFilter(new ColorMatrixColorFilter(mColrColorMatrix));
         //设置边框的画笔
         mBorderPaint.setStyle(Paint.Style.STROKE);
         mBorderPaint.setStrokeWidth(mBorderWidth);
