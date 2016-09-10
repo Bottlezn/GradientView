@@ -1,15 +1,15 @@
 #Shader
 该工程主要用来测试着色器的5个子类。目前已经完成BitmapShader的初步测试，通过绘制圆形ImageView这种常用控件来完成BitmapShader应用。  
 ##RoundImageView
-效果图如下  
-[普通效果](https://github.com/Bottlezn/GradientView/blob/master/app/src/main/res/drawable/screenshot.png)
+在com.test.wdh.gradientview.component这个包下面，效果图如下  
+![普通效果](https://github.com/Bottlezn/GradientView/blob/master/app/src/main/res/drawable/screenshot.png)
 ###功能  
 - 圆形头像
 - 圆角内容
 - 灰色头像
 - 内容压缩  
 
-###属性表和代码
+###属性表和属性代码
 属性名|含义|设置
 ---|---|---
 borderColor|边框颜色|"#000000"格式
@@ -34,3 +34,10 @@ isGray|是否灰色|true是灰色（先阶段不建议使用）
         <attr name="isGray" format="boolean" />
     </declare-styleable>
 ```
+###动态设置代码
+设置绘制类型setDrawStyle(int)，0是圆形，1是圆角;  
+设置灰度属性setGray(boolean),false不做处理，true处理为灰色;  
+设置填充类型setFillType(boolean)，false不做压缩，true可能会对非方形图片做压缩处理;  
+
+###使用场景
+支持xml中添加，也支持代码中动态设置。也支持使用Picasso和Glide等图片加载库作为ImageView进行处理。
