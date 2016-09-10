@@ -17,7 +17,7 @@ borderWidth|边框宽度|接收dp格式
 fillType|填充模式|true图像可能被压缩，为了多展示内容
 corner|圆角大小|接收dp格式
 drawStyle|绘制类型|0是圆形，1是圆角
-isGray|是否灰色|true是灰色（先阶段不建议使用）
+isGray|是否灰色|true是灰色
 
 下面是属性代码
 ```
