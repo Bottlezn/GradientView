@@ -90,6 +90,15 @@ public class RoundImageView extends ImageView implements ViewTreeObserver.OnGlob
     private boolean isGray = false;
 
     /**
+     * 设置灰度信息
+     *
+     * @param gray
+     */
+    public void setGray(boolean gray) {
+        isGray = gray;
+    }
+
+    /**
      * @param fillType 正方形图片这个值可以不设置。长方形图片设置为true，那么会
      *                 将图片压缩为一张正方形图片，展示压缩后的图形。设置为false
      *                 展示对图片宽高比不做压缩，将图片缩放到最短边等于ImageView

@@ -4,6 +4,7 @@
     <declare-styleable name="RoundImageView">
         <attr name="borderColor" format="color" />
         <attr name="borderWidth" format="dimension" />
+        <!--fillType 控制填充模式，为true可能会压缩图像-->
         <attr name="fillType" format="boolean" />
         <attr name="corner" format="dimension" />
         <!--只能是0或1，0是圆形，1是圆角，不设置默认是圆形-->
