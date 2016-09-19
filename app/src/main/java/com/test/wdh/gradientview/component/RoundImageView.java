@@ -100,7 +100,7 @@ public class RoundImageView extends ImageView implements ViewTreeObserver.OnGlob
      *
      * @param gray true设置为灰色
      */
-    public void setGray(boolean gray) {
+    public void setIsGray(boolean gray) {
         if (isGray != gray) {
             isReset = true;
             isGray = gray;

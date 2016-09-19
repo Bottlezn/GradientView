@@ -12,4 +12,10 @@
         <!--true的画，将图像调整为灰色，但是如果遇到ColorDrawable的内容，不知道会发生什么化学反应-->
         <attr name="isGray" format="boolean" />
     </declare-styleable>
+
+    <declare-styleable name="LinearGradientView">
+        <!--变换的目标颜色-->
+        <attr name="targetColor" format="color" />
+        <attr name="defaultColor" format="color" />
+    </declare-styleable>
 </resources>
